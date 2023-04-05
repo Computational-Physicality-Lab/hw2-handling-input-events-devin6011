@@ -46,6 +46,11 @@ const documentKeydownEventHandler = (e) => {
             }
         }
     }
+    else if(e.key === 'Delete') {
+        if(selected) {
+            alert("We don't support deletion yet!");
+        }
+    }
 };
 
 const selectElement = (element) => {

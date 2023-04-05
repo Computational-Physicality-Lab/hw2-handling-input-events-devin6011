@@ -28,6 +28,8 @@ This is the starter code of [2023-Programming User Interface Homework](https://h
 
 ### 加入新的事件處理程序
 
+#### 滾輪事件 (Wheel events)
+
 我加入了針對滑鼠滾輪事件 (Wheel events) 的處理程序。
 
 當有`div`被選取時，滾動滑鼠滾輪可以改變其`border-radius`的屬性。
@@ -35,6 +37,10 @@ This is the starter code of [2023-Programming User Interface Homework](https://h
 如果滾輪滾動時有按住`Shift`鍵，則被選取的`div`將會原地旋轉。
 - 由於我使用了CSS的`rotate` property（而不是`transform: rotate`），需要較新的瀏覽器版本才能支援旋轉。瀏覽器支援可參考此[連結](https://developer.mozilla.org/en-US/docs/Web/CSS/rotate#browser_compatibility)。
 
+#### Device Motion
+
+當裝置有足夠大的z軸加速度時 (絕對值大於3 m/s²)，所有`div`的位置會在畫面中隨機改變。
+
 ## 其他有趣之處
 
-目前沒有其他有趣之處。
+當有`div`被選取時，如果按下鍵盤的`Delete`鍵，會跳出一個alert視窗說明目前不支援刪除操作。
