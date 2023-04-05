@@ -20,6 +20,7 @@ const modes = Object.freeze({
     moving: 2,
     following: 3,
     resetting: 4,
+    hscaling: 5,
 });
 let mode = modes.idle;
 
@@ -105,7 +106,7 @@ const workspaceMousemoveEventHandler = (e) => {
     const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
     const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
     const coordinateUnit = originalCoordinateSplit[0][1];
-    const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + displacement[i] + coordinateUnit);
+    const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + Math.round(displacement[i]) + coordinateUnit);
 
     mousedownElement.style.left = newCoordinate[0];
     mousedownElement.style.top = newCoordinate[1];
@@ -123,7 +124,7 @@ const workspaceTouchstartEventHandler = (e) => {
             const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
             const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
             const coordinateUnit = originalCoordinateSplit[0][1];
-            const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + displacement[i] + coordinateUnit);
+            const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + Math.round(displacement[i]) + coordinateUnit);
 
             mousedownElement.style.left = newCoordinate[0];
             mousedownElement.style.top = newCoordinate[1];
@@ -134,6 +135,12 @@ const workspaceTouchstartEventHandler = (e) => {
             mousedownElement.style.left = mousedownElementOriginalCoordinate[0];
             mousedownElement.style.top = mousedownElementOriginalCoordinate[1];
             mode = modes.resetting;
+        }
+    }
+    else if(mode === modes.idle || mode === modes.mousedown) {
+        if(e.touches.length >= 2) {
+            //todo
+            ;
         }
     }
 };
