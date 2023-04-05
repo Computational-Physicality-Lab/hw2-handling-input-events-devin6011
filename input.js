@@ -226,6 +226,19 @@ const workspaceTouchendEventHandler = (e) => {
     }
 };
 
+const workspaceWheelEventHandler = (e) => {
+    if(selected) {
+        if(e.shiftKey) {
+            const currentRotate = parseFloat(selected.style.rotate || '0turn');
+            selected.style.rotate = (currentRotate + e.deltaY * 0.0003) + 'turn';
+        }
+        else {
+            const currentBorderRadius = parseFloat(selected.style.borderRadius || '0%');
+            selected.style.borderRadius = Math.min(Math.max(currentBorderRadius + e.deltaY * -0.03, 0), 50) + '%';
+        }
+    }
+};
+
 document.addEventListener('keydown', documentKeydownEventHandler, false);
 
 workspace.addEventListener('click', workspaceClickEventHandler, false);
@@ -234,6 +247,7 @@ workspace.addEventListener('mouseup', workspaceMouseupEventHandler, false);
 workspace.addEventListener('touchstart', workspaceTouchstartEventHandler, false);
 workspace.addEventListener('touchmove', workspaceTouchmoveEventHandler, false);
 workspace.addEventListener('touchend', workspaceTouchendEventHandler, false);
+workspace.addEventListener('wheel', workspaceWheelEventHandler, false);
 
 for(const target of targetList) {
     target.addEventListener('click', targetClickEventHandler, false);
