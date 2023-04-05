@@ -193,7 +193,7 @@ const workspaceTouchmoveEventHandler = (e) => {
             const currentScalingDistance = [Math.abs(e.touches[0].pageX - e.touches[1].pageX), Math.abs(e.touches[0].pageY - e.touches[1].pageY)];
             const distanceDiff = currentScalingDistance.map((x, i) => Math.round(x - scalingOriginalDistance[i]));
             const newDimension = selectedOriginalDimension.map((x, i) => Math.max(parseInt(x) + distanceDiff[i], minimumDimension[i]) + 'px');
-            const newCoordinate = selectedOriginalCoordinate.map((x, i) => parseInt(x) - Math.round(distanceDiff[i] / 2) + 'px');
+            const newCoordinate = selectedOriginalCoordinate.map((x, i) => parseInt(x) - Math.round((newDimension[i] - selectedOriginalDimension[i]) / 2) + 'px');
 
             if(mode === modes.hscaling) {
                 selected.style.width = newDimension[0];
