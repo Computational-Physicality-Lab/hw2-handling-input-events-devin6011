@@ -14,6 +14,13 @@ let mousedownElement = null;
 let mousedownElementOriginalCoordinate = null;
 let mousedownOriginalCoordinate = null;
 
+let lastTouchTime = 0;
+
+let selectedOriginalDimension = null;
+let selectedOriginalCoordinate = null;
+let scalingOriginalDistance = null;
+let minimumDimension = [20, 20];
+
 const modes = Object.freeze({
     idle: 0,
     mousedown: 1,
@@ -21,6 +28,7 @@ const modes = Object.freeze({
     following: 3,
     resetting: 4,
     hscaling: 5,
+    vscaling: 6,
 });
 let mode = modes.idle;
 
@@ -103,10 +111,8 @@ const workspaceMousemoveEventHandler = (e) => {
     if(mode !== modes.moving && mode !== modes.following) return;
 
     const currentMouseCoordinate = [e.pageX, e.pageY];
-    const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
-    const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
-    const coordinateUnit = originalCoordinateSplit[0][1];
-    const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + Math.round(displacement[i]) + coordinateUnit);
+    const displacement = currentMouseCoordinate.map((x, i) => Math.round(x - mousedownOriginalCoordinate[i]));
+    const newCoordinate = mousedownElementOriginalCoordinate.map((x, i) => parseInt(x) + displacement[i] + 'px');
 
     mousedownElement.style.left = newCoordinate[0];
     mousedownElement.style.top = newCoordinate[1];
@@ -121,10 +127,8 @@ const workspaceTouchstartEventHandler = (e) => {
         }
         else {
             const currentMouseCoordinate = [e.touches[0].pageX, e.touches[0].pageY];
-            const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
-            const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
-            const coordinateUnit = originalCoordinateSplit[0][1];
-            const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + Math.round(displacement[i]) + coordinateUnit);
+            const displacement = currentMouseCoordinate.map((x, i) => Math.round(x - mousedownOriginalCoordinate[i]));
+            const newCoordinate = mousedownElementOriginalCoordinate.map((x, i) => parseInt(x) + displacement[i] + 'px');
 
             mousedownElement.style.left = newCoordinate[0];
             mousedownElement.style.top = newCoordinate[1];
@@ -138,11 +142,28 @@ const workspaceTouchstartEventHandler = (e) => {
         }
     }
     else if(mode === modes.idle || mode === modes.mousedown) {
-        if(e.touches.length >= 2) {
-            //todo
-            ;
+        if(e.touches.length === 2 && selected && (Date.now() - lastTouchTime) <= 500) { // 0.5 second
+            selectedOriginalDimension = [selected.style.width, selected.style.height];
+            selectedOriginalCoordinate = [selected.style.left, selected.style.top];
+            scalingOriginalDistance = [Math.abs(e.touches[0].pageX - e.touches[1].pageX), Math.abs(e.touches[0].pageY - e.touches[1].pageY)];
+            if(scalingOriginalDistance[0] > scalingOriginalDistance[1]) {
+                mode = modes.hscaling;
+            }
+            else {
+                mode = modes.vscaling;
+            }
         }
     }
+    else if(mode === modes.hscaling || mode === modes.vscaling) {
+        if(e.touches.length >= 3) {
+            selected.style.width = selectedOriginalDimension[0];
+            selected.style.height = selectedOriginalDimension[1];
+            selected.style.left = selectedOriginalCoordinate[0];
+            selected.style.top = selectedOriginalCoordinate[1];
+            mode = modes.resetting;
+        }
+    }
+    lastTouchTime = Date.now();
 };
 
 const targetTouchstartEventHandler = (e) => {
@@ -158,26 +179,47 @@ const workspaceTouchmoveEventHandler = (e) => {
     if(mode === modes.mousedown) {
         mode = modes.moving;
     }
-    if(mode !== modes.moving && mode !== modes.following) return;
 
-    const currentMouseCoordinate = [e.touches[0].pageX, e.touches[0].pageY];
-    const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
-    const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
-    const coordinateUnit = originalCoordinateSplit[0][1];
-    const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + Math.round(displacement[i]) + coordinateUnit);
+    if(mode === modes.moving || mode === modes.following) {
+        const currentMouseCoordinate = [e.touches[0].pageX, e.touches[0].pageY];
+        const displacement = currentMouseCoordinate.map((x, i) => Math.round(x - mousedownOriginalCoordinate[i]));
+        const newCoordinate = mousedownElementOriginalCoordinate.map((x, i) => parseInt(x) + displacement[i] + 'px');
 
-    mousedownElement.style.left = newCoordinate[0];
-    mousedownElement.style.top = newCoordinate[1];
+        mousedownElement.style.left = newCoordinate[0];
+        mousedownElement.style.top = newCoordinate[1];
+    }
+    else if(mode === modes.hscaling || mode === modes.vscaling) {
+        if(e.touches.length === 2) {
+            const currentScalingDistance = [Math.abs(e.touches[0].pageX - e.touches[1].pageX), Math.abs(e.touches[0].pageY - e.touches[1].pageY)];
+            const distanceDiff = currentScalingDistance.map((x, i) => Math.round(x - scalingOriginalDistance[i]));
+            const newDimension = selectedOriginalDimension.map((x, i) => Math.max(parseInt(x) + distanceDiff[i], minimumDimension[i]) + 'px');
+            const newCoordinate = selectedOriginalCoordinate.map((x, i) => parseInt(x) - Math.round(distanceDiff[i] / 2) + 'px');
+
+            if(mode === modes.hscaling) {
+                selected.style.width = newDimension[0];
+                selected.style.left = newCoordinate[0];
+            }
+            if(mode === modes.vscaling) {
+                selected.style.height = newDimension[1];
+                selected.style.top = newCoordinate[1];
+            }
+        }
+    }
 };
 
 const workspaceTouchendEventHandler = (e) => {
     if(mode === modes.moving) {
         mode = modes.idle;
     }
-    if(mode === modes.mousedown) {
+    else if(mode === modes.mousedown) {
         mode = modes.idle;
     }
-    if(mode === modes.resetting) {
+    else if(mode === modes.resetting) {
+        if(e.touches.length === 0) {
+            mode = modes.idle;
+        }
+    }
+    else if(mode === modes.hscaling || mode === modes.vscaling) {
         if(e.touches.length === 0) {
             mode = modes.idle;
         }
