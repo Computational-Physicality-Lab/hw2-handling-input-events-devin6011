@@ -242,16 +242,14 @@ const workspaceWheelEventHandler = (e) => {
 const getRandomInt = (minValue, maxValue) => {
     minValue = Math.ceil(minValue);
     maxValue = Math.floor(maxValue);
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
+    return Math.floor(Math.random() * (maxValue - minValue + 1) + minValue);
+};
 
 const devicemotionEventHandler = (e) => {
     const {x, y, z} = e.acceleration;
     if(Math.abs(z) > 3) {
         const windowWidth = document.body.clientWidth;
         const windowHeight = document.body.clientHeight;
-        console.log(windowWidth);
-        console.log(windowHeight);
 
         for(const target of targetList) {
             const targetDimension = [selected.style.width, selected.style.height];
