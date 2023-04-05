@@ -45,6 +45,13 @@ const documentKeydownEventHandler = (e) => {
                 mode = modes.idle;
             }
         }
+        else if(mode === modes.hscaling || mode === modes.vscaling) {
+            selected.style.width = selectedOriginalDimension[0];
+            selected.style.height = selectedOriginalDimension[1];
+            selected.style.left = selectedOriginalCoordinate[0];
+            selected.style.top = selectedOriginalCoordinate[1];
+            mode = modes.resetting;
+        }
     }
     else if(e.key === 'Delete') {
         if(selected) {
