@@ -239,6 +239,30 @@ const workspaceWheelEventHandler = (e) => {
     }
 };
 
+const getRandomInt = (minValue, maxValue) => {
+    minValue = Math.ceil(minValue);
+    maxValue = Math.floor(maxValue);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+const devicemotionEventHandler = (e) => {
+    const {x, y, z} = e.acceleration;
+    if(Math.abs(z) > 3) {
+        const windowWidth = document.body.clientWidth;
+        const windowHeight = document.body.clientHeight;
+        console.log(windowWidth);
+        console.log(windowHeight);
+
+        for(const target of targetList) {
+            const targetDimension = [selected.style.width, selected.style.height];
+            target.style.left = getRandomInt(10, Math.max(10, windowWidth - parseInt(targetDimension[0]) - 10)) + 'px';
+            target.style.top = getRandomInt(10, Math.max(10, windowHeight - parseInt(targetDimension[1]) - 10)) + 'px';
+        }
+    }
+};
+
+window.addEventListener('devicemotion', devicemotionEventHandler, false);
+
 document.addEventListener('keydown', documentKeydownEventHandler, false);
 
 workspace.addEventListener('click', workspaceClickEventHandler, false);
