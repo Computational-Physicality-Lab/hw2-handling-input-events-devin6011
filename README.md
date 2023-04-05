@@ -18,7 +18,7 @@ This is the starter code of [2023-Programming User Interface Homework](https://h
 
 ### 垂直大小變化
 
-在使用兩隻手指進行縮放時，若兩隻手指的水平距離大於垂直距離，則會進入水平縮放模式；若兩隻手指的垂直距離大於等於水平距離，則會進入垂直縮放模式。
+在使用兩隻手指進行縮放時，若兩隻手指觸及螢幕時的水平距離大於垂直距離，則會進入水平縮放模式；若垂直距離大於等於水平距離，則會進入垂直縮放模式。
 
 除了縮放方向不同之外，我所實作的水平縮放和垂直縮放的行為是一樣的。
 
@@ -28,7 +28,12 @@ This is the starter code of [2023-Programming User Interface Homework](https://h
 
 ### 加入新的事件處理程序
 
-目前尚未實作。
+我加入了針對滑鼠滾輪事件 (Wheel events) 的處理程序。
+
+當有`div`被選取時，滾動滑鼠滾輪可以改變其`border-radius`的屬性。
+
+如果滾輪滾動時有按住`Shift`鍵，則被選取的`div`將會原地旋轉。
+- 由於我使用了CSS的`rotate` property（而不是`transform: rotate`），需要較新的瀏覽器版本才能支援旋轉。瀏覽器支援可參考此[連結](https://developer.mozilla.org/en-US/docs/Web/CSS/rotate#browser_compatibility)。
 
 ## 其他有趣之處
 
