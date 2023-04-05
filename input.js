@@ -78,7 +78,7 @@ const targetDoubleClickEventHandler = (e) => {
     }
 };
 
-const targetMouseupEventHandler = (e) => {
+const workspaceMouseupEventHandler = (e) => {
     if(mode === modes.following) {
         mode = modes.idle;
     }
@@ -141,7 +141,7 @@ const workspaceTouchmoveEventHandler = (e) => {
     const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
     const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
     const coordinateUnit = originalCoordinateSplit[0][1];
-    const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + displacement[i] + coordinateUnit);
+    const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + Math.round(displacement[i]) + coordinateUnit);
 
     mousedownElement.style.left = newCoordinate[0];
     mousedownElement.style.top = newCoordinate[1];
@@ -160,6 +160,7 @@ document.addEventListener('keydown', documentKeydownEventHandler, false);
 
 workspace.addEventListener('click', workspaceClickEventHandler, false);
 workspace.addEventListener('mousemove', workspaceMousemoveEventHandler, false);
+workspace.addEventListener('mouseup', workspaceMouseupEventHandler, false);
 workspace.addEventListener('touchstart', workspaceTouchstartEventHandler, false);
 workspace.addEventListener('touchmove', workspaceTouchmoveEventHandler, false);
 workspace.addEventListener('touchend', workspaceTouchendEventHandler, false);
@@ -167,7 +168,6 @@ workspace.addEventListener('touchend', workspaceTouchendEventHandler, false);
 for(const target of targetList) {
     target.addEventListener('click', targetClickEventHandler, false);
     target.addEventListener('dblclick', targetDoubleClickEventHandler, false);
-    target.addEventListener('mouseup', targetMouseupEventHandler, false);
     target.addEventListener('mousedown', targetMousedownEventHandler, false);
     target.addEventListener('touchstart', targetTouchstartEventHandler, false);
 }
