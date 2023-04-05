@@ -57,7 +57,9 @@ const workspaceClickEventHandler = (e) => {
         selectElement(null);
     }
     else if(mode === modes.resetting) {
-        mode = modes.idle;
+        if(!e.touches || e.touches.length === 0) {
+            mode = modes.idle;
+        }
     }
 };
 
@@ -111,14 +113,28 @@ const workspaceMousemoveEventHandler = (e) => {
 
 const workspaceTouchstartEventHandler = (e) => {
     if(mode === modes.following) {
-        const currentMouseCoordinate = [e.touches[0].pageX, e.touches[0].pageY];
-        const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
-        const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
-        const coordinateUnit = originalCoordinateSplit[0][1];
-        const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + displacement[i] + coordinateUnit);
+        if(e.touches.length >= 2) {
+            mousedownElement.style.left = mousedownElementOriginalCoordinate[0];
+            mousedownElement.style.top = mousedownElementOriginalCoordinate[1];
+            mode = modes.resetting;
+        }
+        else {
+            const currentMouseCoordinate = [e.touches[0].pageX, e.touches[0].pageY];
+            const displacement = currentMouseCoordinate.map((x, i) => x - mousedownOriginalCoordinate[i]);
+            const originalCoordinateSplit = mousedownElementOriginalCoordinate.map(x => x.split(/(\d+)/).slice(1));
+            const coordinateUnit = originalCoordinateSplit[0][1];
+            const newCoordinate = originalCoordinateSplit.map((x, i) => Number(x[0]) + displacement[i] + coordinateUnit);
 
-        mousedownElement.style.left = newCoordinate[0];
-        mousedownElement.style.top = newCoordinate[1];
+            mousedownElement.style.left = newCoordinate[0];
+            mousedownElement.style.top = newCoordinate[1];
+        }
+    }
+    else if(mode === modes.moving) {
+        if(e.touches.length >= 2) {
+            mousedownElement.style.left = mousedownElementOriginalCoordinate[0];
+            mousedownElement.style.top = mousedownElementOriginalCoordinate[1];
+            mode = modes.resetting;
+        }
     }
 };
 
@@ -153,6 +169,11 @@ const workspaceTouchendEventHandler = (e) => {
     }
     if(mode === modes.mousedown) {
         mode = modes.idle;
+    }
+    if(mode === modes.resetting) {
+        if(e.touches.length === 0) {
+            mode = modes.idle;
+        }
     }
 };
 
