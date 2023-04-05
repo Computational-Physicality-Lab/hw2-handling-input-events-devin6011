@@ -257,7 +257,7 @@ const devicemotionEventHandler = (e) => {
         const windowHeight = document.body.clientHeight;
 
         for(const target of targetList) {
-            const targetDimension = [selected.style.width, selected.style.height];
+            const targetDimension = [target.style.width, target.style.height];
             target.style.left = getRandomInt(10, Math.max(10, windowWidth - parseInt(targetDimension[0]) - 10)) + 'px';
             target.style.top = getRandomInt(10, Math.max(10, windowHeight - parseInt(targetDimension[1]) - 10)) + 'px';
         }
